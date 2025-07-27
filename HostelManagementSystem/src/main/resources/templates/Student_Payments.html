@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HMS-UOP | Student Payments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100 flex h-screen overflow-hidden">
+
+<!-- Sidebar -->
+<div class="w-52 bg-blue-100 text-gray-800 flex flex-col justify-between">
+
+    <!-- Top Logo -->
+    <div>
+        <div class="p-4 flex items-center border-b border-blue-200 justify-center">
+            <img th:src="@{/images/logo.png}" alt="Hostel Logo" class="w-20 h-20 object-contain" />
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <div class="mt-3 px-4 space-y-3">
+            <a th:href="@{/student-dashboard}" class="w-full py-2 bg-white text-black rounded-full font-semibold hover:bg-blue-300 flex items-center px-4 space-x-2">
+                <img th:src="@{/images/Dashboard.svg}" class="w-5 h-5" />
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/Student_History_Residence}" class="w-full py-2 bg-white text-black rounded-full font-semibold hover:bg-blue-300 flex items-center px-4 space-x-2">
+                <img th:src="@{/images/history.svg}" class="w-5 h-5" />
+                <span>History</span>
+            </a>
+            <a th:href="@{/Student_ComplainsAndRequests}" class="w-full py-2 bg-white text-black rounded-full font-semibold hover:bg-blue-300 flex items-center px-4 space-x-2">
+                <img th:src="@{/images/Complain.svg}" class="w-5 h-5" />
+                <span>Service Desk</span>
+            </a>
+            <a th:href="@{/Student_Payments}" class="w-full py-2 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 flex items-center px-4 space-x-2">
+                <img th:src="@{/images/Payments.png}" class="w-5 h-5" />
+                <span>Payments</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Logout -->
+    <footer class="mb-6 px-4">
+        <a th:href="@{/logout}" class="w-full py-2 bg-white text-black rounded-full font-bold hover:bg-blue-400 flex items-center justify-center space-x-2">
+            <img th:src="@{/images/LogOut.png}" class="w-5 h-5 -rotate-90" />
+            <span>Log Out</span>
+        </a>
+    </footer>
+</div>
+
+<!-- Main Content -->
+<div class="flex-1 overflow-y-auto">
+    <div class="container mx-auto p-6">
+
+        <!-- Header -->
+        <div class="bg-blue-200 rounded-lg sticky top-0 z-50 shadow p-6 mb-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <img th:src="@{/images/UniversityLogo.png}" alt="University Logo" class="w-12 h-12 object-contain" />
+                    <h1 class="text-xl font-bold text-gray-800">HMS - UNIVERSITY OF PERADENIYA</h1>
+                </div>
+                <div class="text-sm text-gray-600 font-medium" th:text="${student.email}">user@pdn.ac.lk</div>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <form th:action="@{/submitPayment}" method="post" enctype="multipart/form-data"
+              class="bg-blue-100 rounded-2xl shadow-lg p-8 mb-10 space-y-8 max-w-5xl mx-auto">
+
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-800">Submit Hostel Payment</h2>
+                <p class="text-sm text-gray-600 mt-2">Provide accurate details & upload your payment slip.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Registration Number -->
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Registration Number</label>
+                    <input type="text" name="registrationNumber" placeholder="e.g. S/20/390"
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400" required />
+                </div>
+
+                <!-- Semester Dropdown -->
+                <div x-data="{ open: false, selected: '', options: ['I', 'II', 'I & II'] }" class="relative">
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Semester</label>
+                    <button type="button" @click="open = !open"
+                            class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg bg-white text-sm">
+                        <span x-text="selected === '' ? 'Select Semester' : selected"></span>
+                    </button>
+                    <ul x-show="open" @click.outside="open = false"
+                        class="absolute z-10 mt-1 w-full border border-gray-300 rounded-lg bg-white shadow">
+                        <template x-for="option in options" :key="option">
+                            <li @click="selected = option; open = false"
+                                class="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer">
+                                <span x-text="option"></span>
+                            </li>
+                        </template>
+                    </ul>
+                    <input type="hidden" name="semester" :value="selected">
+                </div>
+
+                <!-- Payment Type Dropdown -->
+                <div x-data="{ open: false, selected: '', options: ['Hostel Fee', 'Damage Fee'] }" class="relative">
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Payment Type</label>
+                    <button type="button" @click="open = !open"
+                            class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg bg-white text-sm">
+                        <span x-text="selected === '' ? 'Select Payment Type' : selected"></span>
+                    </button>
+                    <ul x-show="open" @click.outside="open = false"
+                        class="absolute z-10 mt-1 w-full border border-gray-300 rounded-lg bg-white shadow">
+                        <template x-for="option in options" :key="option">
+                            <li @click="selected = option; open = false"
+                                class="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer">
+                                <span x-text="option"></span>
+                            </li>
+                        </template>
+                    </ul>
+                    <input type="hidden" name="paymentType" :value="selected">
+                </div>
+
+                <!-- Amount -->
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Amount (Rs)</label>
+                    <input type="number" name="amount" placeholder="e.g. 5000"
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400" required />
+                </div>
+
+                <!-- Reference Number -->
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Payment Slip Reference Number</label>
+                    <input type="text" name="slipRefNumber" placeholder="e.g. REF123456"
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400" required />
+                </div>
+
+                <!-- Academic Year -->
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Academic Year</label>
+                    <input type="text" name="year" placeholder="e.g. 2024/2025"
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400" required />
+                </div>
+
+                <!-- Hall Name Autocomplete -->
+                <div x-data="{
+                    query: '',
+                    halls: ['Sarasavi Uyana', 'Jayathilaka Hall', 'Gamini Dissanayake Hall', 'Arunachalam Hall', 'Kannangara Hall', 'Wijewardena Hall'],
+                    get filtered() {
+                        return this.query === '' ? [] : this.halls.filter(h => h.toLowerCase().includes(this.query.toLowerCase()));
+                    }
+                }" class="relative md:col-span-2">
+                    <label class="block mb-2 text-sm font-semibold text-gray-700">Name of the Hall</label>
+                    <input type="text" name="hallName" x-model="query" placeholder="Type hall name..."
+                           class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400" autocomplete="off" />
+                    <ul x-show="filtered.length" class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow">
+                        <template x-for="hall in filtered" :key="hall">
+                            <li @click="query = hall" class="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer">
+                                <span x-text="hall"></span>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <!-- File Upload -->
+                <div class="md:col-span-2">
+                    <label for="pdfImageFile" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Upload Payment Slip <span class="text-xs font-normal text-gray-500">(PDF or Image)</span>
+                    </label>
+                    <div class="flex items-center justify-between border-2 border-dashed border-gray-300 rounded-xl px-5 py-6 hover:border-blue-400 transition duration-300">
+                        <div class="flex items-center space-x-4">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            <div>
+                                <label for="pdfImageFile" class="cursor-pointer text-blue-700 font-medium hover:underline">
+                                    Choose file to upload
+                                </label>
+                                <p class="text-xs text-gray-500">Accepted: .pdf, .jpg, .jpeg, .png | Max: 5MB</p>
+                            </div>
+                        </div>
+                        <input type="file" name="pdfImageFile" id="pdfImageFile" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center pt-6">
+                <button type="submit"
+                        class="px-8 py-3 bg-blue-600 text-white text-sm font-semibold rounded-full hover:bg-blue-700 transition duration-300 shadow-md">
+                    Submit Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

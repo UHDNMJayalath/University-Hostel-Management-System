@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS-UOP_Deans</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex h-screen">
+
+<!-- Sidebar -->
+<div class="w-52 bg-blue-100 text-gray-800 flex flex-col justify-between">
+    <div class="p-4 flex items-center border-b border-blue-200 justify-center">
+        <img th:src="@{/images/logo.png}" alt="Hostel Logo" class="w-20 h-20 object-contain border-none shadow-none outline-none">
+    </div>
+    <footer>
+        <div class="text-center mb-6 px-4">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="w-full py-2 bg-white text-black rounded-full font-bold hover:bg-blue-400 focus:outline-none flex items-center justify-center space-x-2">
+                    <img th:src="@{/images/LogOut.png}" alt="Logout Icon" class="w-5 h-5 -rotate-90" />
+                    <span>Log Out</span>
+                </button>
+            </form>
+        </div>
+    </footer>
+</div>
+
+<!-- Main Content -->
+<div class="flex-1 overflow-auto">
+    <div class="container mx-auto p-6">
+
+        <!-- Header -->
+        <div class="bg-blue-200 rounded-lg shadow p-6 mb-6 sticky top-0 z-50">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <img th:src="@{/images/UniversityLogo.png}" alt="University Logo" class="w-12 h-12 object-contain">
+                    <h1 class="text-xl font-bold text-gray-800">HMS - UNIVERSITY OF PERADENIYA</h1>
+                </div>
+                <div class="text-sm text-gray-600">
+                    <span class="font-medium" th:text="${#authentication.name}">User@pdn.ac.lk</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Form -->
+        <div class="flex justify-center p-6">
+            <div class="w-full max-w-lg">
+                <form th:action="@{/dean-dashboard}" method="get" class="mt-5 sm:flex sm:items-center">
+                    <button type="submit"
+                            class="mb-3 sm:mb-0 sm:mr-3 inline-flex items-center justify-center rounded-md border border-transparent bg-blue-400 px-4 py-2 font-medium text-black shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Search
+                    </button>
+                    <input id="q" name="q"
+                           class="inline w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-3 leading-5 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                           placeholder="Student Registration Number" type="search" autofocus
+                           th:value="${param.q}">
+                </form>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${error}" class="mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+                <span class="block sm:inline" th:text="${error}"></span>
+            </div>
+        </div>
+
+        <!-- Student Information -->
+        <div th:if="${student}" class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Student Information</h2>
+            <div class="space-y-3">
+                <div class="flex items-center">
+                    <h3 class="w-40 text-sm font-semibold text-gray-700">Student ID</h3>
+                    <p class="text-sm text-gray-600" th:text="${student.studentId}">S20###</p>
+                </div>
+                <div class="flex items-center">
+                    <h3 class="w-40 text-sm font-semibold text-gray-700">Name</h3>
+                    <p class="text-sm text-gray-600" th:text="${student.name}">########</p>
+                </div>
+                <div class="flex items-center">
+                    <h3 class="w-40 text-sm font-semibold text-gray-700">Hostel</h3>
+                    <p class="text-sm text-gray-600" th:text="${student.hostel}">Akbar</p>
+                </div>
+                <div class="flex items-center">
+                    <h3 class="w-40 text-sm font-semibold text-gray-700">Email Address</h3>
+                    <p class="text-sm text-gray-600" th:text="${student.email}">######@pdn.ac.lk</p>
+                </div>
+                <div class="flex items-center">
+                    <h3 class="w-40 text-sm font-semibold text-gray-700">Contact No</h3>
+                    <p class="text-sm text-gray-600" th:text="${student.contactNumber}">07########</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div th:if="${historyList}" class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Hostel History</h2>
+            <div class="overflow-x-auto">
+                <table class="table-fixed w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="w-1/3 px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">Sex</th>
+                        <th class="w-1/3 px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">Academic Year</th>
+                        <th class="w-1/3 px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">Hostel</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="record : ${historyList}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${record.sex}">Male</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${record.academicYear}">2023/2024</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${record.hostel}">Kandyan</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
