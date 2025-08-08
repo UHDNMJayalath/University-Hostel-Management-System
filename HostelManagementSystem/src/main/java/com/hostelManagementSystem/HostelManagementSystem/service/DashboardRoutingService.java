@@ -1,9 +1,9 @@
 package com.hostelManagementSystem.HostelManagementSystem.service;
 
+import com.hostelManagementSystem.HostelManagementSystem.entity.Registrar;
 import com.hostelManagementSystem.HostelManagementSystem.entity.Student;
 import com.hostelManagementSystem.HostelManagementSystem.entity.UserRoles;
-import com.hostelManagementSystem.HostelManagementSystem.repository.StudentRepository;
-import com.hostelManagementSystem.HostelManagementSystem.repository.UserRolesRepository;
+import com.hostelManagementSystem.HostelManagementSystem.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +22,12 @@ public class DashboardRoutingService {
 
     @Autowired
     private UserRolesRepository userRolesRepo;
+
+    @Autowired
+    private AssistantRepository assistantRepo;
+
+    @Autowired
+    private RegistrarRepository registrarRepo;
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -52,10 +58,18 @@ public class DashboardRoutingService {
                     return "sub warden-dashboard";
 
                 case "management_assistant":
-                    return "management-dashboard";
+                    return "ManagementAssistance-dashboard";
 
                 case "registration_branch":
-                    return "registration-dashboard";
+                    Optional<Registrar> registrar = registrarRepo.findByEmailIgnoreCase(email);
+                    if (registrar.isPresent()){
+                        model.addAttribute("registrar",registrar.get());
+                        return "SRB-dashboard";
+                    }
+                    else {
+                        model.addAttribute("error", "Registrar details not found.");
+                        return "login";
+                    }
 
                 case "director_accommodation_division":
                     return "director-dashboard";

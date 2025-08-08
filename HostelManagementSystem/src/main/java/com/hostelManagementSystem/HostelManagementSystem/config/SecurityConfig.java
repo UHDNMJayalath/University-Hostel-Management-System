@@ -18,7 +18,8 @@ public class SecurityConfig {
                                 "/images/**","/student-dashboard","/Student_ComplainsAndRequests",
                                 "/Student_History_Damage","/Student_History_Payment","/Student_History_Residence",
                                 "/bursar-dashboard","/vc_dvc-dashboard","/Deans-dashboard","/forgot-password",
-                                "/verify-code", "/reset-password","/Student_Payments","/submitPayment").permitAll()
+                                "/verify-code", "/reset-password","/Student_Payments","/submitPayment",
+                                "/upload-excel", "/SRB_history").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
